@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="An interactive guide to the typical accounting department structure at a mid-to-large company. Hover over any role to see responsibilities and qualifications.">
+<meta property="og:title" content="Accounting Department Structure">
+<meta property="og:description" content="An interactive org chart showing roles, responsibilities, and qualifications across the accounting function.">
+<meta property="og:type" content="website">
+<title>Accounting Department — Org Chart Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f5f0;
+    --surface: #ffffff;
+    --border: #e2dfd8;
+    --accent-exec: #1a3a5c;
+    --accent-exec-light: #e8eef4;
+    --accent-dir: #1a6b52;
+    --accent-dir-light: #e4f3ed;
+    --accent-mgr: #8b5c0a;
+    --accent-mgr-light: #faf0dc;
+    --accent-sr: #5c3d8f;
+    --accent-sr-light: #f0eaf8;
+    --accent-staff: #6b4a6b;
+    --accent-staff-light: #f3eaf3;
+    --text: #2c2a25;
+    --text-dim: #6b6860;
+    --text-muted: #9e998e;
+    --line-color: #d4d0c8;
+    --tooltip-bg: #1e1e24;
+    --tooltip-text: #eeecea;
+    --tooltip-dim: #a8a59e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: auto;
+  }
+  .header {
+    text-align: center;
+    padding: 44px 24px 20px;
+  }
+  .header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .header p {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    margin-top: 8px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.55;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px auto 8px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  .instruction {
+    text-align: center;
+    margin: 12px auto 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .instruction span {
+    display: inline-block;
+    background: #e8e5de;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+  .chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 36px 24px 60px;
+    min-width: fit-content;
+  }
+  .vline { width: 2px; background: var(--line-color); }
+  .vline-sm { height: 28px; }
+  .vline-md { height: 32px; }
+  .level-row {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    position: relative;
+  }
+  .branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .sub-group {
+    display: flex;
+    gap: 20px;
+    position: relative;
+  }
+  .card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    position: relative;
+    cursor: default;
+    transition: all 0.25s ease;
+    width: 195px;
+    animation: fadeIn 0.4s ease both;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .card.exec { border-left: 4px solid var(--accent-exec); width: 240px; }
+  .card.exec:hover { border-color: var(--accent-exec); background: var(--accent-exec-light); }
+  .card.dir { border-left: 4px solid var(--accent-dir); width: 210px; }
+  .card.dir:hover { border-color: var(--accent-dir); background: var(--accent-dir-light); }
+  .card.mgr { border-left: 4px solid var(--accent-mgr); }
+  .card.mgr:hover { border-color: var(--accent-mgr); background: var(--accent-mgr-light); }
+  .card.sr { border-left: 4px solid var(--accent-sr); width: 185px; }
+  .card.sr:hover { border-color: var(--accent-sr); background: var(--accent-sr-light); }
+  .card.staff { border-left: 4px solid var(--accent-staff); width: 185px; }
+  .card.staff:hover { border-color: var(--accent-staff); background: var(--accent-staff-light); }
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+  }
+  .card.exec .card-icon { background: var(--accent-exec-light); }
+  .card.dir .card-icon { background: var(--accent-dir-light); }
+  .card.mgr .card-icon { background: var(--accent-mgr-light); }
+  .card.sr .card-icon { background: var(--accent-sr-light); }
+  .card.staff .card-icon { background: var(--accent-staff-light); }
+  .card-title {
+    font-weight: 700;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: var(--text);
+  }
+  .card-level {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .card.exec .card-level { color: var(--accent-exec); }
+  .card.dir .card-level { color: var(--accent-dir); }
+  .card.mgr .card-level { color: var(--accent-mgr); }
+  .card.sr .card-level { color: var(--accent-sr); }
+  .card.staff .card-level { color: var(--accent-staff); }
+  .tooltip {
+    position: fixed;
+    z-index: 1000;
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    border-radius: 14px;
+    padding: 20px 22px;
+    width: 340px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .tooltip.visible { opacity: 1; transform: translateY(0); }
+  .tooltip-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+  .tooltip-level {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .tooltip-section { margin-bottom: 10px; }
+  .tooltip-section:last-child { margin-bottom: 0; }
+  .tooltip-section-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--tooltip-dim);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .tooltip-section-text { font-size: 0.8rem; line-height: 1.55; color: #d5d3ce; }
+  .tooltip-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .tooltip-tag {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.08);
+    color: #c0bdb6;
+    font-weight: 500;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 1200px) {
+    .chart-container { transform-origin: top center; transform: scale(0.72); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Accounting Department Structure</h1>
+  <p>A standard org chart for a mid-to-large company's accounting function. Hover over any position to learn what the role does, key responsibilities, and typical qualifications.</p>
+</div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-exec)"></div>Executive</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-dir)"></div>Director</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-mgr)"></div>Manager</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-sr)"></div>Senior</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-staff)"></div>Entry / Staff</div>
+</div>
+<div class="instruction"><span>Hover</span> over any role to see the full job description</div>
+
+<div class="chart-container" id="chart"></div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const positions = {
+  cfo: {
+    title: 'Chief Financial Officer (CFO)', icon: '📊', level: 'Executive', css: 'exec',
+    description: 'The CFO is the most senior financial executive in the organization. They oversee all financial operations, develop financial strategy, manage capital structure, and serve as a key advisor to the CEO and board of directors on financial planning, risk management, and growth initiatives.',
+    responsibilities: ['Financial strategy & planning', 'Investor & board relations', 'Capital allocation & fundraising', 'Risk management oversight', 'Financial regulatory compliance'],
+    qualifications: ['CPA and/or MBA typically required', '15+ years progressive finance experience', 'Public company experience often preferred'],
+  },
+  controller: {
+    title: 'Controller', icon: '📋', level: 'Director', css: 'dir',
+    description: 'The Controller is the chief accounting officer who manages day-to-day accounting operations. They ensure accuracy of financial reporting, maintain internal controls, and oversee production of financial statements in compliance with GAAP or IFRS.',
+    responsibilities: ['Financial statement preparation', 'Internal controls & SOX compliance', 'Month-end and year-end close', 'Accounting policy & procedures', 'External audit coordination'],
+    qualifications: ['CPA required', '10+ years accounting experience', 'Strong knowledge of GAAP/IFRS'],
+  },
+  tax_director: {
+    title: 'Tax Director', icon: '🏛️', level: 'Director', css: 'dir',
+    description: 'The Tax Director leads the company\'s tax function, overseeing compliance with all federal, state, local, and international tax obligations. They develop tax strategies to minimize liability while ensuring full compliance.',
+    responsibilities: ['Tax compliance & filing', 'Tax planning & strategy', 'Transfer pricing oversight', 'Tax provision (ASC 740)', 'Managing audits by tax authorities'],
+    qualifications: ['CPA required, MST preferred', '10+ years corporate tax experience', 'Multi-state and international tax knowledge'],
+  },
+  internal_audit_director: {
+    title: 'Internal Audit Director', icon: '🔍', level: 'Director', css: 'dir',
+    description: 'The Internal Audit Director leads independent evaluations of the company\'s financial and operational controls. They report functionally to the Audit Committee of the Board, providing objective assurance that risks are managed and internal controls are effective.',
+    responsibilities: ['Develop annual audit plan', 'SOX testing & compliance', 'Fraud risk assessment', 'Operational & financial audits', 'Report findings to Audit Committee'],
+    qualifications: ['CPA and/or CIA required', '10+ years audit experience', 'Big 4 background common'],
+  },
+  fpa_director: {
+    title: 'FP&A Director', icon: '📈', level: 'Director', css: 'dir',
+    description: 'The Director of Financial Planning & Analysis leads budgeting, forecasting, and strategic financial analysis. They translate complex data into actionable insights for leadership, helping the organization make informed decisions about resource allocation and growth.',
+    responsibilities: ['Annual budget development', 'Rolling forecasts & projections', 'Variance analysis & reporting', 'Business case & ROI modeling', 'KPI dashboards for leadership'],
+    qualifications: ['CPA, CFA, or MBA preferred', '8+ years FP&A experience', 'Advanced Excel & BI tool proficiency'],
+  },
+  gl_manager: {
+    title: 'Assistant Controller', icon: '📒', level: 'Manager', css: 'mgr',
+    description: 'The Assistant Controller supports the Controller in managing daily accounting operations. They oversee the general ledger, lead the month-end and year-end close processes, supervise staff accountants, and step in for the Controller as needed. This role is a key bridge between the accounting staff and senior leadership.',
+    responsibilities: ['Lead month-end & year-end close', 'General ledger oversight', 'Review journal entries & reconciliations', 'Supervise & develop accounting staff', 'Support financial statement preparation'],
+    qualifications: ['CPA preferred', '5–8 years accounting experience', 'ERP system proficiency (SAP, Oracle, NetSuite)'],
+  },
+  ap_manager: {
+    title: 'Accounts Payable Manager', icon: '💳', level: 'Manager', css: 'mgr',
+    description: 'The AP Manager oversees the full procure-to-pay cycle, ensuring vendors and suppliers are paid accurately and on time. They manage the AP team, enforce purchasing policies, and optimize payment terms and cash flow.',
+    responsibilities: ['Invoice processing & approval workflows', 'Vendor relationship management', 'Payment scheduling (checks, ACH, wire)', '1099 reporting & compliance', 'Expense report policy enforcement'],
+    qualifications: ['Bachelor\'s in Accounting or Finance', '5+ years AP experience', 'Familiarity with P2P automation tools'],
+  },
+  ar_manager: {
+    title: 'Accounts Receivable Manager', icon: '💰', level: 'Manager', css: 'mgr',
+    description: 'The AR Manager oversees billing, collections, and cash application. They ensure revenue is captured accurately, invoices are sent promptly, and outstanding receivables are collected in a timely manner to maintain healthy cash flow.',
+    responsibilities: ['Billing & invoicing oversight', 'Collections strategy & aging analysis', 'Cash application & reconciliation', 'Credit policy management', 'Bad debt reserves & write-offs'],
+    qualifications: ['Bachelor\'s in Accounting or Finance', '5+ years AR experience', 'Strong communication & negotiation skills'],
+  },
+  sr_accountant: {
+    title: 'Senior Accountant', icon: '🧮', level: 'Senior', css: 'sr',
+    description: 'A Senior Accountant handles complex accounting tasks such as preparing journal entries, reconciling accounts, and assisting with financial statement preparation. They often mentor junior staff and serve as a subject matter expert on specific accounting areas.',
+    responsibilities: ['Complex journal entries & accruals', 'Account reconciliations', 'Assist with financial close', 'Support external audits', 'Mentor staff accountants'],
+    qualifications: ['CPA preferred or in progress', '3–5 years accounting experience', 'Strong GAAP knowledge'],
+  },
+  staff_accountant: {
+    title: 'Staff Accountant', icon: '📝', level: 'Entry / Staff', css: 'staff',
+    description: 'A Staff Accountant performs fundamental accounting tasks including recording journal entries, reconciling bank statements, and assisting with month-end close activities. This is typically the first professional role for accounting graduates.',
+    responsibilities: ['Post routine journal entries', 'Bank & credit card reconciliations', 'Maintain supporting schedules', 'Assist with month-end tasks', 'Prepare basic financial reports'],
+    qualifications: ['Bachelor\'s in Accounting', '0–2 years experience', 'CPA eligibility a plus'],
+  },
+  tax_manager: {
+    title: 'Tax Manager', icon: '🏦', level: 'Manager', css: 'mgr',
+    description: 'The Tax Manager oversees daily operations of the tax compliance team. They manage the preparation and review of federal, state, and local tax returns, coordinate quarterly tax provisions, and ensure all filings meet deadlines. They serve as the primary point of contact between the tax team and other departments.',
+    responsibilities: ['Manage tax return preparation & review', 'Oversee quarterly tax provisions', 'Ensure timely filing compliance', 'Coordinate with external tax advisors', 'Supervise & develop tax staff'],
+    qualifications: ['CPA required, MST preferred', '5–8 years corporate tax experience', 'Experience with tax compliance software'],
+  },
+  audit_manager: {
+    title: 'Audit Manager', icon: '📊', level: 'Manager', css: 'mgr',
+    description: 'The Audit Manager plans, coordinates, and oversees internal audit engagements. They manage the audit team\'s day-to-day activities, review workpapers and findings, and ensure audits are completed on time and in accordance with professional standards. They act as the liaison between audit staff and the Internal Audit Director.',
+    responsibilities: ['Plan & manage audit engagements', 'Review audit workpapers & findings', 'Manage SOX testing schedule', 'Coach & develop audit staff', 'Present findings to management'],
+    qualifications: ['CPA or CIA required', '5–8 years audit experience', 'Big 4 or internal audit management background'],
+  },
+  fpa_manager: {
+    title: 'FP&A Manager', icon: '📐', level: 'Manager', css: 'mgr',
+    description: 'The FP&A Manager leads the day-to-day financial planning and analysis activities, including budgeting cycles, monthly forecasting, and management reporting. They supervise the analyst team and ensure leadership receives timely, accurate financial insights to support decision-making.',
+    responsibilities: ['Lead budgeting & forecasting cycles', 'Manage monthly financial reporting', 'Supervise & develop analyst team', 'Build & maintain financial models', 'Partner with department heads on planning'],
+    qualifications: ['CPA, CFA, or MBA preferred', '5–8 years FP&A experience', 'Strong financial modeling & BI tool skills'],
+  },
+  sr_tax_analyst: {
+    title: 'Senior Tax Analyst', icon: '📑', level: 'Senior', css: 'sr',
+    description: 'The Senior Tax Analyst prepares and reviews corporate tax returns, supports quarterly and annual tax provisions, and researches complex tax issues. They work closely with the Tax Director to implement tax planning strategies.',
+    responsibilities: ['Prepare federal & state tax returns', 'Quarterly tax provision support', 'Tax research & technical memos', 'Estimated tax payment calculations', 'Support tax audits & inquiries'],
+    qualifications: ['CPA or MST preferred', '3–5 years corporate tax experience', 'Knowledge of tax software (OneSource, Vertex)'],
+  },
+  tax_analyst: {
+    title: 'Tax Analyst', icon: '📄', level: 'Entry / Staff', css: 'staff',
+    description: 'A Tax Analyst supports the tax compliance function by gathering data, preparing workpapers, and assisting with tax return preparation. This entry-level tax role builds foundational skills in corporate tax compliance and reporting.',
+    responsibilities: ['Gather data for tax filings', 'Prepare tax workpapers', 'Assist with return preparation', 'Track filing deadlines', 'Maintain tax records & documentation'],
+    qualifications: ['Bachelor\'s in Accounting', '0–2 years experience', 'Basic understanding of federal & state tax'],
+  },
+  internal_auditor: {
+    title: 'Internal Auditor', icon: '🔎', level: 'Senior', css: 'sr',
+    description: 'An Internal Auditor plans and executes audit engagements to evaluate the effectiveness of internal controls, compliance, and operational efficiency. They document findings and recommend improvements to management.',
+    responsibilities: ['Execute audit test plans', 'Document findings & recommendations', 'Test SOX key controls', 'Perform walkthroughs & interviews', 'Track remediation of findings'],
+    qualifications: ['CPA or CIA preferred', '2–5 years audit experience', 'Big 4 or internal audit background'],
+  },
+  audit_associate: {
+    title: 'Audit Associate', icon: '📂', level: 'Entry / Staff', css: 'staff',
+    description: 'An Audit Associate supports the internal audit team by performing test work, preparing documentation, and assisting with control walkthroughs. This entry-level role builds understanding of risk management and corporate governance.',
+    responsibilities: ['Perform control testing', 'Prepare audit workpapers', 'Assist with walkthroughs', 'Document process flows', 'Update audit tracking systems'],
+    qualifications: ['Bachelor\'s in Accounting or Finance', '0–2 years experience', 'CIA or CPA pursuit encouraged'],
+  },
+  sr_financial_analyst: {
+    title: 'Senior Financial Analyst', icon: '📉', level: 'Senior', css: 'sr',
+    description: 'A Senior Financial Analyst builds and maintains financial models, leads variance analysis, and partners with business units to translate financial data into strategic recommendations. They are key contributors to budgeting and forecasting.',
+    responsibilities: ['Build & maintain financial models', 'Lead variance & trend analysis', 'Support annual budgeting process', 'Prepare board & leadership reports', 'Partner with business unit leads'],
+    qualifications: ['CFA or MBA a plus', '3–5 years FP&A experience', 'Advanced Excel & BI tool skills'],
+  },
+  financial_analyst: {
+    title: 'Financial Analyst', icon: '📊', level: 'Entry / Staff', css: 'staff',
+    description: 'A Financial Analyst gathers and organizes financial data, prepares reports, and assists with budgeting and forecasting activities. This entry-level FP&A role develops analytical skills and business acumen for a career in corporate finance.',
+    responsibilities: ['Compile data for reports & dashboards', 'Assist with budget preparation', 'Update forecast models', 'Prepare ad hoc financial analyses', 'Track KPIs & performance metrics'],
+    qualifications: ['Bachelor\'s in Finance or Accounting', '0–2 years experience', 'Strong Excel & analytical skills'],
+  },
+  treasury_director: {
+    title: 'Treasury Director', icon: '🏦', level: 'Director', css: 'dir',
+    description: 'The Treasury Director oversees the organization\'s cash management, banking relationships, debt and investment portfolios, and liquidity planning. They ensure the company has adequate cash flow to meet obligations and develop strategies to optimize the use of financial resources while managing financial risk.',
+    responsibilities: ['Cash management & liquidity planning', 'Banking relationship management', 'Debt & capital markets activity', 'Foreign exchange & interest rate risk', 'Investment portfolio oversight'],
+    qualifications: ['CTP certification preferred', '10+ years treasury or corporate finance experience', 'Strong capital markets knowledge'],
+  },
+  treasury_manager: {
+    title: 'Treasury Manager', icon: '💵', level: 'Manager', css: 'mgr',
+    description: 'The Treasury Manager handles the day-to-day treasury operations including cash positioning, bank account management, and short-term borrowing and investing. They prepare cash flow forecasts, manage payment systems, and support the Treasury Director on capital planning and risk management initiatives.',
+    responsibilities: ['Daily cash positioning & forecasting', 'Bank account administration', 'Wire transfer & payment approvals', 'Short-term investment management', 'Debt covenant compliance monitoring'],
+    qualifications: ['CTP or CPA preferred', '5–8 years treasury experience', 'Proficiency with treasury management systems'],
+  },
+  treasury_specialist: {
+    title: 'Treasury Specialist', icon: '🏧', level: 'Entry / Staff', css: 'staff',
+    description: 'A Treasury Specialist supports daily cash operations by processing wire transfers, reconciling bank accounts, and assisting with cash position reporting. This entry-level treasury role builds foundational skills in corporate cash management, banking operations, and financial risk.',
+    responsibilities: ['Process wire transfers & ACH payments', 'Reconcile bank accounts daily', 'Assist with cash position reports', 'Maintain banking documentation', 'Support month-end treasury close'],
+    qualifications: ["Bachelor's in Finance or Accounting", '0–2 years experience', 'Strong attention to detail & Excel skills'],
+  },
+  ap_specialist: {
+    title: 'AP Specialist', icon: '🧾', level: 'Entry / Staff', css: 'staff',
+    description: 'An AP Specialist processes vendor invoices, matches purchase orders, and prepares payments. They handle vendor inquiries and ensure transactions are coded and approved correctly. This is an entry-level role in the procure-to-pay cycle.',
+    responsibilities: ['Process & code invoices', '3-way match (PO, receipt, invoice)', 'Prepare payment batches', 'Respond to vendor inquiries', 'Process employee expense reports'],
+    qualifications: ["Associate's or Bachelor's degree", '0–2 years AP experience', 'Attention to detail & data entry accuracy'],
+  },
+  ar_specialist: {
+    title: 'AR Specialist', icon: '📨', level: 'Entry / Staff', css: 'staff',
+    description: 'An AR Specialist handles customer invoicing, applies incoming payments, and follows up on overdue accounts. They play a direct role in maintaining cash flow and customer relationships on the collections side of accounting.',
+    responsibilities: ['Generate & send customer invoices', 'Apply payments to accounts', 'Follow up on past-due balances', 'Resolve billing discrepancies', 'Prepare aging reports'],
+    qualifications: ["Associate's or Bachelor's degree", '0–2 years AR experience', 'Strong communication skills'],
+  },
+};
+
+function buildChart() {
+  const chart = document.getElementById('chart');
+  let d = 0;
+  const delay = () => { d += 50; return d; };
+  const card = (id) => {
+    const p = positions[id];
+    return `<div class="card ${p.css}" data-id="${id}" style="animation-delay:${delay()}ms">
+      <div class="card-icon">${p.icon}</div>
+      <div class="card-title">${p.title}</div>
+      <div class="card-level">${p.level}</div>
+    </div>`;
+  };
+  const vline = (cls='vline-sm') => `<div class="vline ${cls}"></div>`;
+
+  let html = card('cfo') + vline('vline-md');
+  html += `<div class="level-row">`;
+
+  // Controller branch
+  html += `<div class="branch">${vline()}${card('controller')}${vline()}
+    <div class="sub-group" id="ctrl-mgrs">
+      <div class="branch">${vline()}${card('gl_manager')}${vline()}
+        <div class="sub-group">
+          <div class="branch">${vline()}${card('sr_accountant')}</div>
+          <div class="branch">${vline()}${card('staff_accountant')}</div>
+        </div>
+      </div>
+      <div class="branch">${vline()}${card('ap_manager')}${vline()}
+        <div class="sub-group">
+          <div class="branch">${vline()}${card('ap_specialist')}</div>
+        </div>
+      </div>
+      <div class="branch">${vline()}${card('ar_manager')}${vline()}
+        <div class="sub-group">
+          <div class="branch">${vline()}${card('ar_specialist')}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Tax Director
+  html += `<div class="branch">${vline()}${card('tax_director')}${vline()}
+    <div class="sub-group">
+      <div class="branch">${vline()}${card('tax_manager')}${vline()}
+        <div class="sub-group">
+          <div class="branch">${vline()}${card('sr_tax_analyst')}</div>
+          <div class="branch">${vline()}${card('tax_analyst')}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Internal Audit
+  html += `<div class="branch">${vline()}${card('internal_audit_director')}${vline()}
+    <div class="sub-group">
+      <div class="branch">${vline()}${card('audit_manager')}${vline()}
+        <div class="sub-group">
+          <div class="branch">${vline()}${card('internal_auditor')}</div>
+          <div class="branch">${vline()}${card('audit_associate')}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // FP&A
+  html += `<div class="branch">${vline()}${card('fpa_director')}${vline()}
+    <div class="sub-group">
+      <div class="branch">${vline()}${card('fpa_manager')}${vline()}
+        <div class="sub-group">
+          <div class="branch">${vline()}${card('sr_financial_analyst')}</div>
+          <div class="branch">${vline()}${card('financial_analyst')}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Treasury
+  html += `<div class="branch">${vline()}${card('treasury_director')}${vline()}
+    <div class="sub-group">
+      <div class="branch">${vline()}${card('treasury_manager')}${vline()}
+        <div class="sub-group">
+          <div class="branch">${vline()}${card('treasury_specialist')}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  html += `</div>`;
+  chart.innerHTML = html;
+  addConnectors();
+}
+
+function addConnectors() {
+  document.querySelectorAll('.connector-bar').forEach(el => el.remove());
+  document.querySelectorAll('.sub-group').forEach(group => {
+    const children = Array.from(group.children).filter(c => c.classList.contains('branch'));
+    if (children.length < 2) return;
+    const first = children[0].getBoundingClientRect();
+    const last = children[children.length - 1].getBoundingClientRect();
+    const groupRect = group.getBoundingClientRect();
+    const left = first.left + first.width / 2 - groupRect.left;
+    const right = last.left + last.width / 2 - groupRect.left;
+    const bar = document.createElement('div');
+    bar.className = 'connector-bar';
+    bar.style.cssText = `position:absolute;top:0;left:${left}px;width:${right - left}px;height:2px;background:var(--line-color);pointer-events:none;`;
+    group.appendChild(bar);
+  });
+  const levelRow = document.querySelector('.level-row');
+  const branches = Array.from(levelRow.children).filter(c => c.classList.contains('branch'));
+  if (branches.length >= 2) {
+    const first = branches[0].getBoundingClientRect();
+    const last = branches[branches.length - 1].getBoundingClientRect();
+    const rowRect = levelRow.getBoundingClientRect();
+    const left = first.left + first.width / 2 - rowRect.left;
+    const right = last.left + last.width / 2 - rowRect.left;
+    const bar = document.createElement('div');
+    bar.className = 'connector-bar';
+    bar.style.cssText = `position:absolute;top:0;left:${left}px;width:${right - left}px;height:2px;background:var(--line-color);pointer-events:none;z-index:0;`;
+    levelRow.appendChild(bar);
+  }
+}
+
+// TOOLTIP
+const tooltip = document.getElementById('tooltip');
+let activeCard = null;
+
+document.addEventListener('mouseover', (e) => {
+  const card = e.target.closest('.card');
+  if (!card) return;
+  activeCard = card;
+  const id = card.dataset.id;
+  const p = positions[id];
+  if (!p) return;
+  const respHTML = p.responsibilities.map(r => `<span class="tooltip-tag">${r}</span>`).join('');
+  const qualHTML = p.qualifications.map(q => `<span class="tooltip-tag">${q}</span>`).join('');
+  const colorVar = `var(--accent-${p.css})`;
+  tooltip.innerHTML = `
+    <div class="tooltip-title">${p.title}</div>
+    <div class="tooltip-level" style="color:${colorVar}">${p.level}</div>
+    <div class="tooltip-section">
+      <div class="tooltip-section-label">What This Role Does</div>
+      <div class="tooltip-section-text">${p.description}</div>
+    </div>
+    <div class="tooltip-section">
+      <div class="tooltip-section-label">Key Responsibilities</div>
+      <div class="tooltip-tags">${respHTML}</div>
+    </div>
+    <div class="tooltip-section">
+      <div class="tooltip-section-label">Typical Qualifications</div>
+      <div class="tooltip-tags">${qualHTML}</div>
+    </div>`;
+  tooltip.classList.add('visible');
+  positionTooltip(card);
+});
+
+document.addEventListener('mouseout', (e) => {
+  const card = e.target.closest('.card');
+  if (!card) return;
+  if (!card.contains(e.relatedTarget)) {
+    activeCard = null;
+    tooltip.classList.remove('visible');
+  }
+});
+
+function positionTooltip(card) {
+  const rect = card.getBoundingClientRect();
+  const tw = 340;
+  tooltip.style.visibility = 'hidden';
+  tooltip.style.display = 'block';
+  const th = tooltip.offsetHeight;
+  let x = rect.right + 14;
+  let y = rect.top + rect.height / 2 - th / 2;
+  if (x + tw > window.innerWidth - 16) x = rect.left - tw - 14;
+  if (x < 16) { x = rect.left + rect.width / 2 - tw / 2; y = rect.bottom + 12; }
+  if (y + th > window.innerHeight - 16) y = window.innerHeight - th - 16;
+  if (y < 16) y = 16;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+  tooltip.style.visibility = 'visible';
+}
+
+buildChart();
+window.addEventListener('resize', () => { addConnectors(); });
+</script>
+</body>
+</html>
